@@ -66,7 +66,15 @@ if ($validado == 0 || $validado == 1) {
             include("manageFotos.php");
         ?>
 
-        <h1>Editar contenidos:</h1>
+        <h1>
+            Editar contenidos:
+            <div id="imgLoader" style="color:red;">
+                Cargando contenidos...
+                <br/>
+                <img src="./images/loader_light_blue.gif" alt="Cargando..." title="Cargando..." />
+            </div>
+        </h1>
+        
     	<textarea cols="80" id="editor1" name="editor1" rows="10"></textarea>
 
         <p><a href="#" onclick="storeContents()">Guardar cambios <img src="images/save.png" alt="guardar" title="guardar" style="border:0;"/></a></p>
@@ -76,12 +84,78 @@ if ($validado == 0 || $validado == 1) {
             include("pie.php");
         ?>
         <div id="hiddenContents" style="display:none"></div>
-    </div> <!-- style="background:white" -- >
+    </div>
 	<script type="text/javascript">
-	//<![CDATA[
-(function(){var a;jQuery.ajax({type:"GET",async:false,url:"<?php echo $chosenPage;?>",success:function(c){a=c}});jQuery("#hiddenContents").html(a);var b=jQuery("#hiddenContents .monogatari-editor").html();CKEDITOR.replace("editor1",{width: '780',height: '250', skin:"kama",toolbar:[["Bold","Italic","Underline","Strike"],["JustifyLeft","JustifyCenter","JustifyRight","JustifyBlock"],["Link","-","Image"],"/",["Styles","Format","Font","FontSize"],
-["TextColor","BGColor"]]});jQuery("#editor1").html(b)})();function storeContents(){if(!confirm("Realmente deseas guardar los cambios?")){return false}var c=CKEDITOR.instances.editor1;var a=escape(c.getData());var b="url=<?php echo $chosenPage?>";b=b+"&editedContents="+a;jQuery.ajax({type:"POST",async:true,data:b,url:"./storeChanges.php",success:function(d){alert(d)}})};
-	//]]>
+    
+
+    function storeContents() {
+        if (!confirm("Realmente deseas guardar los cambios?")) {
+            return false;
+        }
+	    // Get the editor instance that we want to interact with.
+	    var oEditor = CKEDITOR.instances.editor1;
+	    // Get the editor contents
+//	    alert( oEditor.getData() );
+        // Recuperar los contenidos del div alterado
+//        var cambios = jQuery("#editor1").html();
+
+
+        var cambiosTemp = oEditor.getData();
+//        var cambios = escape(cambiosTemp);
+//        cambiosTemp = cambiosTemp.replace('+','%252B'); // Escape this special sequence
+//        var cambios = escape(cambiosTemp);
+        var cambios = encodeURIComponent(cambiosTemp);
+//        var cambios = escape(oEditor.getData());
+        var datos = "url=<?php echo $chosenPage?>";
+        datos = datos + "&editedContents=" + cambios;
+//        alert(datos);
+//        alert(cambios);
+
+        jQuery.ajax({
+            type: "POST",
+            async:true,
+            data:datos,
+            url: "./storeChanges.php",
+            success: function(datosRetorno){
+                alert(datosRetorno);
+            }
+        });
+
+    }
+
+    function initEditor(){
+        var paginaWeb;
+        // Store the contents of the page on a JS variable
+        jQuery.ajax({
+            type: "GET",
+            async:false,
+            url: "<?php echo $chosenPage;?>",
+            success: function(datosRetorno){
+                paginaWeb = datosRetorno;
+                // Set contents on hidden DIV
+                jQuery("#hiddenContents").html(paginaWeb);
+                var editable = jQuery("#hiddenContents .monogatari-editor").html();
+
+                CKEDITOR.replace( 'editor1',
+					            {
+						            skin : 'kama',
+					                toolbar : [ ['Source'],
+                                                ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+                                                ['Link','-','Image'],
+                                                '/',
+                                                ['Bold', 'Italic', 'Underline', 'Strike'],
+                                                ['Font','FontSize'],
+                                                ['TextColor','BGColor']
+                                            ]
+				                });
+                jQuery("#editor1").html(editable);
+                jQuery("#imgLoader").hide();
+            } // success
+        });
+    }
+
+    initEditor();
+
 	</script>
     </body>
     </html>

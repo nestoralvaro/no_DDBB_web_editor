@@ -13,6 +13,9 @@ if ($validado == 0 || $validado == 1) {
     //echo $url_editable;
     $html = file_get_html($url_editable);
 
+    // TODO NEW (not needed)
+//    $edited_contents = urldecode($edited_contents);
+
     $html->find('.monogatari-editor', 0)->innertext = $edited_contents;
 
     $newdata = $html->outertext;
