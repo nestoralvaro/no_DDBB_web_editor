@@ -74,7 +74,6 @@ Para almacenar la página se invoca por AJAX a "/editor/storeChanges.php" que ob
 ////////////////////////////////////
 ///////////// MEJORAS
 
-- El editor no funciona correctamente en navegadores con motor webkit (Chromium / Chrome / Safari)
 - Actualmente solo se recoge la primera ocurrencia de la clase que se edita (class="monogatari-editor"), así que si se aplicase dicha clase a 2 elementos sólo el primero podría ser editado (debería permitirse la edición de varias zonas separadas de la misma página)
 - Sería interesante hacer una versión del editor que obtenga y almacene los contenidos de BBDD
     * En esta versión no se hizo así ya que las páginas debían ser *HTML* y no se podían obtener los contenidos por PHP
